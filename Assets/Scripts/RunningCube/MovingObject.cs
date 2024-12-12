@@ -12,6 +12,8 @@ namespace SpaceMission
         private Transform _transform;
         private IEnumerator _movingCoroutine;
 
+        public event Action GotPlayer;
+
         private void Awake()
         {
             _transform = transform;
@@ -47,6 +49,11 @@ namespace SpaceMission
             
                 yield return null;
             }
+        }
+
+        protected void OnGotPlayer()
+        {
+            GotPlayer?.Invoke();
         }
     }
 }

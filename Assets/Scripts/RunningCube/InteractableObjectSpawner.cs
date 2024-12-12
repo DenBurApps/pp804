@@ -1,10 +1,11 @@
+using System;
 using System.Collections.Generic;
 using RunningCube;
 using SpaceMission;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace SpaceMission
+namespace RunningCube
 {
     public class InteractableObjectSpawner : ObjectPool<MovingObject>
     {
@@ -14,6 +15,9 @@ namespace SpaceMission
         [SerializeField] private float _objMovingSpeed;
 
         private List<MovingObject> _spawnedObjects = new List<MovingObject>();
+
+        public event Action CoinCatched;
+        public event Action SpikesCatched;
 
         private void Awake()
         {
@@ -42,10 +46,12 @@ namespace SpaceMission
                 if (@object is Spikes)
                 {
                     @object.transform.position = _spawnArea.GetSpikePositionToSpawn();
+                    @object.GotPlayer += OnSpikesCatched;
                 }
                 else
                 {
                     @object.transform.position = _spawnArea.GetPlatformPositionToSpawn();
+                    @object.GotPlayer += OnCoinCatched;
                 }
 
                 _spawnedObjects.Add(@object);
@@ -59,6 +65,15 @@ namespace SpaceMission
             if (@object == null)
                 return;
 
+            if (@object is Spikes)
+            {
+                @object.GotPlayer -= OnSpikesCatched;
+            }
+            else
+            {
+                @object.GotPlayer -= OnCoinCatched;
+            }
+            
             @object.DisableMovement();
             PutObject(@object);
 
@@ -76,6 +91,7 @@ namespace SpaceMission
             {
                 @object.DisableMovement();
                 ReturnToPool(@object);
+                
             }
         }
 
@@ -89,5 +105,8 @@ namespace SpaceMission
                 _prefabs[randomIndex] = temp;
             }
         }
+
+        private void OnSpikesCatched() => SpikesCatched?.Invoke();
+        private void OnCoinCatched() => CoinCatched?.Invoke();
     }
 }

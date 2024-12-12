@@ -1,7 +1,7 @@
 using SpaceMission;
 using UnityEngine;
 
-namespace SpaceMission
+namespace RunningCube
 {
     public class PoolReturner : MonoBehaviour
     {

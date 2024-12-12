@@ -50,6 +50,7 @@ namespace RunningCube
         {
             LoadSkinData();
             UpdateBalanceUI();
+            Disable();
         }
 
         public void Enable()

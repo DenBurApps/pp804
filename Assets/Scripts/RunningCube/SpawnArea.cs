@@ -1,7 +1,7 @@
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace SpaceMission
+namespace RunningCube
 {
     public class SpawnArea : MonoBehaviour
     {
