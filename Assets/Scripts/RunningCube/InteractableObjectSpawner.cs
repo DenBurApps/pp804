@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using RunningCube;
-using SpaceMission;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -48,7 +46,7 @@ namespace RunningCube
                     @object.transform.position = _spawnArea.GetSpikePositionToSpawn();
                     @object.GotPlayer += OnSpikesCatched;
                 }
-                else
+                else if(@object is Platform)
                 {
                     @object.transform.position = _spawnArea.GetPlatformPositionToSpawn();
                     @object.GotPlayer += OnCoinCatched;
@@ -73,7 +71,7 @@ namespace RunningCube
             {
                 @object.GotPlayer -= OnCoinCatched;
             }
-            
+
             @object.DisableMovement();
             PutObject(@object);
 
@@ -91,7 +89,6 @@ namespace RunningCube
             {
                 @object.DisableMovement();
                 ReturnToPool(@object);
-                
             }
         }
 

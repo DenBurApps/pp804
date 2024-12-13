@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-namespace SpaceMission
+namespace RunningCube
 {
     [RequireComponent(typeof(BoxCollider2D))]
     public class MovingObject : MonoBehaviour,IIntractable
@@ -11,14 +11,21 @@ namespace SpaceMission
         
         private Transform _transform;
         private IEnumerator _movingCoroutine;
+        private Vector2 _defaultPosition;
 
         public event Action GotPlayer;
 
         private void Awake()
         {
             _transform = transform;
+            _defaultPosition = _transform.position;
         }
 
+        public void ReturnToDefaultPosition()
+        {
+            _transform.position = _defaultPosition;
+        }
+        
         public void EnableMovement()
         {
             if (_movingCoroutine == null)

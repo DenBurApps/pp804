@@ -1,5 +1,4 @@
 using System;
-using SpaceMission;
 using UnityEngine;
 
 namespace RunningCube
@@ -11,6 +10,7 @@ namespace RunningCube
         private void OnEnable()
         {
             _coin = GetComponentInChildren<Coin>();
+            _coin.gameObject.SetActive(true);
             _coin.GotPlayer += OnGotPlayer;
         }
 

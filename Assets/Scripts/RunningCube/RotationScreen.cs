@@ -10,6 +10,7 @@ namespace RunningCube
 
         private void Start()
         {
+            Screen.orientation = ScreenOrientation.Portrait;
             StartCoroutine(StartDisabling());
         }
 

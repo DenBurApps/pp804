@@ -141,7 +141,6 @@ namespace RunningCube
         {
             if (!File.Exists(_skinDataKey))
             {
-                Debug.Log("no saves");
                 SetDataToElements();
                 return;
             }
@@ -155,7 +154,6 @@ namespace RunningCube
             }
 
             SetDataToElements();
-            Debug.Log("loaded");
         }
 
         private void UpdateBalanceUI()

@@ -13,20 +13,25 @@ namespace RunningCube
         private Rigidbody2D _rigidbody2D;
 
         private bool _canJump = true;
+        private Coroutine _touchCoroutine;
 
         private void Awake()
         {
             _rigidbody2D = GetComponent<Rigidbody2D>();
         }
 
-        private void OnEnable()
+        public void EnableInput()
         {
-            StartCoroutine(HandleInput());
+            _touchCoroutine = StartCoroutine(HandleInput());
         }
 
-        private void OnDisable()
+        public void DisableInput()
         {
-            StopCoroutine(HandleInput());
+            if (_touchCoroutine != null)
+            {
+                StopCoroutine(_touchCoroutine);
+                _touchCoroutine = null;
+            }
         }
 
         private IEnumerator HandleInput()

@@ -12,6 +12,7 @@ namespace RunningCube
             if (other.TryGetComponent(out Player player))
             {
                 GotPlayer?.Invoke();
+                gameObject.SetActive(false);
             }
         }
     }

@@ -20,7 +20,7 @@ namespace RunningCube
             _gameStore.ColorTypeSelected -= SetColor;
         }
 
-        public void SetColor(ColorType type)
+        private void SetColor(ColorType type)
         {
             foreach (var colorHolder in _colorHolders)
             {

@@ -10,14 +10,17 @@ public static class StatisticsDataHolder
 {
     private static string SavePath = Path.Combine(Application.persistentDataPath, "Statistics");
 
-    public static List<StatisticsData> StatisticsDatas = new List<StatisticsData>(5);
+    public static List<StatisticsData> StatisticsDatas;
 
     static StatisticsDataHolder()
     {
-        for (int i = 0; i < StatisticsDatas.Count; i++)
+        StatisticsDatas = new List<StatisticsData>(5);
+        
+        for (int i = 0; i < StatisticsDatas.Capacity; i++)
         {
             StatisticsDatas.Add(new StatisticsData(0, 0, 0, 0, 0));
         }
+        
         LoadStats();
     }
 
@@ -49,7 +52,7 @@ public static class StatisticsDataHolder
     {
         var wrapper = new StatisticsDataWrapper(StatisticsDatas);
         var json = JsonConvert.SerializeObject(wrapper, Formatting.Indented);
-        File.WriteAllText(json, SavePath);
+        File.WriteAllText(SavePath, json);
         Debug.Log("saved");
     }
 
@@ -58,6 +61,7 @@ public static class StatisticsDataHolder
         if (!File.Exists(SavePath))
         {
             Debug.Log("no saves");
+            
             return;
         }
 

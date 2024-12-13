@@ -9,10 +9,6 @@ namespace RunningCube
         [SerializeField] private float _spikesSpawnPosition;
         private float _xPosition;
 
-        public float PlatformSpawnPosition => _platformSpawnPosition;
-
-        public float SpikesSpawnPosition => _spikesSpawnPosition;
-
         private void Awake()
         {
             _xPosition = transform.position.x;

@@ -23,12 +23,20 @@ public class EndScreen : MonoBehaviour
         _screenVisabilityHandler = GetComponent<ScreenVisabilityHandler>();
     }
 
+    private void Start()
+    {
+        Disable();
+    }
+
     public void Enable(int coins, string time, float bestTime)
     {
         _screenVisabilityHandler.EnableScreen();
-        _coinsText.text = "<sprite name=\"Fra1me 8 2\">  " + coins.ToString();
-        _currentTimeText.text = time;
+
+        if (_coinsText != null)
+            _coinsText.text = "<sprite name=\"Fra1me 8 2\">  " + coins.ToString();
         
+        _currentTimeText.text = time;
+
         int minutes = Mathf.FloorToInt(bestTime / 60);
         int seconds = Mathf.FloorToInt(bestTime % 60);
 

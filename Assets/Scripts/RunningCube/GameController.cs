@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using SpaceMission;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,8 +8,7 @@ namespace RunningCube
 {
     public class GameController : MonoBehaviour
     {
-        private const string BestTimeKey = "RunningCubeBestTime";
-        private const int SpawnInterval = 1;
+        private const float SpawnInterval = 1.5f;
 
         [SerializeField] private Sprite _emptyHeartSprite;
         [SerializeField] private Sprite _fullHeartSprite;
@@ -31,12 +29,12 @@ namespace RunningCube
         private int _coins;
         private float _timer;
         private int _healthCount;
-        
+
         private IEnumerator _spawnCoroutine;
         private IEnumerator _timerCoroutine;
-        
+
         private GameState _currentGameState;
-        
+
         private enum GameState
         {
             Starting,
@@ -48,35 +46,59 @@ namespace RunningCube
         private void OnEnable()
         {
             _rotateScreen.ScreenClosed += OpenStartScreen;
-            
+
             _spawner.SpikesCatched += ProcessSpikesCollision;
             _spawner.CoinCatched += ProcessCoinCollision;
+
+            _startScreen.PlayClicked += StartGame;
+
+            _menu.RestartClicked += RestartGame;
+            _menu.MenuClicked += OpenStartScreen;
+            _menu.ContinueClicked += ContinueGame;
+
+            _endScreen.RestartClicked += RestartGame;
+            _endScreen.MainMenuClicked += OpenStartScreen;
         }
 
         private void OnDisable()
         {
             _rotateScreen.ScreenClosed -= OpenStartScreen;
-            
+
             _spawner.SpikesCatched -= ProcessSpikesCollision;
             _spawner.CoinCatched -= ProcessCoinCollision;
+
+            _startScreen.PlayClicked -= StartGame;
+            
+            _menu.RestartClicked -= RestartGame;
+            _menu.MenuClicked -= OpenStartScreen;
+            _menu.ContinueClicked -= ContinueGame;
+
+            _endScreen.RestartClicked -= RestartGame;
+            _endScreen.MainMenuClicked -= OpenStartScreen;
         }
 
-        private void OpenStartScreen()
+        public void OnPauseGame()
         {
+            SetGameState(GameState.Paused);
+        }
+
+        public void OpenStartScreen()
+        {
+            ResetAllValues();
             _ingameElements.DisableScreen();
+            _menu.Disable();
+            _endScreen.Disable();
             _startScreen.Enable();
         }
 
         private void StartGame()
         {
             _ingameElements.EnableScreen();
-            _startScreen.Enable();
-            _menu.Disable();
-            _endScreen.Disable();
-            
+            _startScreen.Disable();
+
             SetGameState(GameState.Playing);
         }
-        
+
         private void UpdateHearts()
         {
             for (int i = 0; i < _hearts.Length; i++)
@@ -84,7 +106,7 @@ namespace RunningCube
                 _hearts[i].sprite = i < _healthCount ? _fullHeartSprite : _emptyHeartSprite;
             }
         }
-        
+
         private void SetGameState(GameState newState)
         {
             _currentGameState = newState;
@@ -96,7 +118,8 @@ namespace RunningCube
                     break;
 
                 case GameState.Playing:
-                    ResetAllValues();
+                    _player.EnableInput();
+                    _ingameElements.EnableScreen();
 
                     if (_spawnCoroutine == null)
                     {
@@ -113,11 +136,27 @@ namespace RunningCube
                     break;
 
                 case GameState.End:
-                 //   ProcessGameEnd();
+                    ProcessGameEnd();
+                    break;
+
+                case GameState.Paused:
+                    _spawner.ReturnAllObjectsToPool();
+                    _player.DisableInput();
+                    _ingameElements.DisableScreen();
+
+                    if (_spawnCoroutine != null)
+                        StopCoroutine(_spawnCoroutine);
+
+                    _spawnCoroutine = null;
+
+                    if (_timerCoroutine != null)
+                        StopCoroutine(_timerCoroutine);
+
+                    _timerCoroutine = null;
                     break;
             }
         }
-        
+
         private IEnumerator StartSpawning()
         {
             WaitForSeconds interval = new WaitForSeconds(SpawnInterval);
@@ -150,22 +189,58 @@ namespace RunningCube
         private void ProcessSpikesCollision()
         {
             _healthCount--;
-            
+
             UpdateHearts();
 
             if (_healthCount <= 0)
             {
-                //ProcessGameEnd;
-                _endScreen.Enable(_coins, _timerText.text, StatisticsDataHolder.StatisticsDatas[0].BestTime);
+                UpdateBestTimeValue();
+                SetGameState(GameState.End);
             }
+        }
+
+        private void ContinueGame()
+        {
+            SetGameState(GameState.Playing);
+        }
+
+        private void RestartGame()
+        {
+            ResetAllValues();
+            SetGameState(GameState.Playing);
         }
 
         private void ProcessCoinCollision()
         {
             _coins += 5;
-            _coinsText.text = _coins.ToString();
+            _coinsText.text = _coinsText.text = "<sprite name=\"Fra1me 8 2\">  " + _coins.ToString();
         }
-        
+
+        private void ProcessGameEnd()
+        {
+            var statsData = new StatisticsData(StatisticsDataHolder.StatisticsDatas[0].GamesPlayed++, 0, 0,
+                StatisticsDataHolder.StatisticsDatas[0].CollectedBonuses + _coins,
+                StatisticsDataHolder.StatisticsDatas[0].BestTime);
+
+            StatisticsDataHolder.UpdateGameStatistics(_gameType, statsData);
+            _endScreen.Enable(_coins, _timerText.text, StatisticsDataHolder.StatisticsDatas[0].BestTime);
+
+            if (_coins > 0)
+            {
+                _playerBalance.IncreaseBalance(_coins);
+            }
+            
+            if (_spawnCoroutine != null)
+                StopCoroutine(_spawnCoroutine);
+
+            if (_timerCoroutine != null)
+                StopCoroutine(_timerCoroutine);
+
+            _spawnCoroutine = null;
+            _timerCoroutine = null;
+            _player.DisableInput();
+        }
+
         private void ResetAllValues()
         {
             _coins = 0;
@@ -185,26 +260,24 @@ namespace RunningCube
             _coinsText.text = "<sprite name=\"Fra1me 8 2\">  " + _coins.ToString();
             _timerText.text = Mathf.CeilToInt(_timer).ToString();
             _spawner.ReturnAllObjectsToPool();
+            _player.DisableInput();
         }
 
         private void UpdateBestTimeValue()
         {
-            if (PlayerPrefs.HasKey(BestTimeKey))
+            if (StatisticsDataHolder.StatisticsDatas[0].BestTime > 0)
             {
-                var bestTime = PlayerPrefs.GetFloat(BestTimeKey);
+                var bestTime = StatisticsDataHolder.StatisticsDatas[0].BestTime;
 
                 if (_timer > bestTime)
                 {
-                    PlayerPrefs.SetFloat(BestTimeKey, _timer);
+                    StatisticsDataHolder.StatisticsDatas[0].BestTime = _timer;
                 }
             }
             else
             {
-                PlayerPrefs.SetFloat(BestTimeKey, _timer);
+                StatisticsDataHolder.StatisticsDatas[0].BestTime = _timer;
             }
-
-            PlayerPrefs.Save();
         }
-        
     }
 }
