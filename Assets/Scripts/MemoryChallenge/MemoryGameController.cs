@@ -18,6 +18,8 @@ namespace MemoryChallenge
         [SerializeField] private ScreenVisabilityHandler _ingameElements;
         [SerializeField] private TMP_Text _collectedPairsText;
         [SerializeField] private GameType _gameType;
+        [SerializeField] private AudioSource _scoreSound;
+        [SerializeField] private AudioSource _gameEndSound;
 
         private CellTypeProvider _cellTypeProvider;
         private float _currentTime;
@@ -25,6 +27,7 @@ namespace MemoryChallenge
         private Cell _firstCell;
         private Cell _secondCell;
         private int _cellPairs;
+        private int _foundCellsCount;
 
         private void Awake()
         {
@@ -43,11 +46,11 @@ namespace MemoryChallenge
             }
 
             _startScreen.PlayClicked += ProcessNewGameStart;
-            
+
             _menu.RestartClicked += ProcessNewGameStart;
             _menu.MenuClicked += OpenStartScreen;
             _menu.ContinueClicked += ContinueGame;
-            
+
             _endScreen.RestartClicked += ProcessNewGameStart;
             _endScreen.MainMenuClicked += OpenStartScreen;
         }
@@ -58,7 +61,7 @@ namespace MemoryChallenge
             {
                 cell.Clicked -= ProcessCellClicked;
             }
-            
+
             _startScreen.PlayClicked -= ProcessNewGameStart;
 
             _endScreen.RestartClicked -= ProcessNewGameStart;
@@ -85,8 +88,8 @@ namespace MemoryChallenge
             _menu.Disable();
             _timerCoroutine = StartTimer();
             StartCoroutine(_timerCoroutine);
-        
-            List<CellTypes> cellTypesList =  _cellTypeProvider.GetPair(_cellPairs);
+
+            List<CellTypes> cellTypesList = _cellTypeProvider.GetPair(_cellPairs);
 
             for (int i = 0; i < cellTypesList.Count; i++)
             {
@@ -131,6 +134,8 @@ namespace MemoryChallenge
             if (_firstCell.CurrentType == _secondCell.CurrentType)
             {
                 _cellPairs--;
+                _foundCellsCount++;
+                _scoreSound.Play();
 
                 _firstCell.Disable();
                 _secondCell.Disable();
@@ -159,6 +164,7 @@ namespace MemoryChallenge
 
             _firstCell = null;
             _secondCell = null;
+            _foundCellsCount = 0;
             UpdatePairsText();
         }
 
@@ -166,12 +172,15 @@ namespace MemoryChallenge
         {
             _currentTime = 0;
 
-            while (_currentTime >= 0f)
+            while (_currentTime > 0f)
             {
                 _currentTime += Time.deltaTime;
                 UpdateTimer(_currentTime);
                 yield return null;
             }
+
+            _currentTime = 0;
+            _view.SetTimeValue("00:00");
         }
 
         private void UpdateTimer(float time)
@@ -181,29 +190,34 @@ namespace MemoryChallenge
             int minutes = Mathf.FloorToInt(time / 60);
             int seconds = Mathf.FloorToInt(time % 60);
 
-            _view.SetTimeValue($"{minutes:00}:{seconds:00}"); 
+            _view.SetTimeValue($"{minutes:00}:{seconds:00}");
         }
 
         private void UpdatePairsText()
         {
-            _collectedPairsText.text = $"{_cellPairs}/{_cellHolder.Cells.Count / 2}";
+            _collectedPairsText.text = $"{_foundCellsCount}/{_cellHolder.Cells.Count / 2}";
         }
-        
+
         private void ProcessGameWon()
         {
-            var statsData = new StatisticsData(StatisticsDataHolder.StatisticsDatas[2].GamesPlayed++,StatisticsDataHolder.StatisticsDatas[2].SuccessfulGames++ , 0,
+            UpdateBestTimeValue();
+
+            var statsData = new StatisticsData(StatisticsDataHolder.StatisticsDatas[2].GamesPlayed + 1,
+                StatisticsDataHolder.StatisticsDatas[2].SuccessfulGames + 1, 0,
                 StatisticsDataHolder.StatisticsDatas[2].CollectedBonuses + 0,
                 StatisticsDataHolder.StatisticsDatas[2].BestTime);
 
             StatisticsDataHolder.UpdateGameStatistics(_gameType, statsData);
             _endScreen.Enable(0, _view.Timer, StatisticsDataHolder.StatisticsDatas[2].BestTime);
-            
+            _gameEndSound.Play();
+
             if (_timerCoroutine != null)
             {
                 StopCoroutine(_timerCoroutine);
                 _timerCoroutine = null;
             }
         }
+
         public void OpenStartScreen()
         {
             ResetDefaultValues();
@@ -213,7 +227,24 @@ namespace MemoryChallenge
             _startScreen.Enable();
             _view.Disable();
         }
-        
+
+        private void UpdateBestTimeValue()
+        {
+            if (StatisticsDataHolder.StatisticsDatas[2].BestTime > 0)
+            {
+                var bestTime = StatisticsDataHolder.StatisticsDatas[2].BestTime;
+
+                if (_currentTime > bestTime)
+                {
+                    StatisticsDataHolder.StatisticsDatas[2].BestTime = _currentTime;
+                }
+            }
+            else
+            {
+                StatisticsDataHolder.StatisticsDatas[2].BestTime = _currentTime;
+            }
+        }
+
         private void PauseGame()
         {
             if (_timerCoroutine != null)
@@ -221,7 +252,7 @@ namespace MemoryChallenge
                 StopCoroutine(_timerCoroutine);
                 _timerCoroutine = null;
             }
-            
+
             _menu.Enable();
         }
 

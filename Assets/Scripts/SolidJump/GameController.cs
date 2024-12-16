@@ -22,6 +22,9 @@ namespace SolidJump
         [SerializeField] private ScreenVisabilityHandler _ingameElements;
         [SerializeField] private InteractableObjectSpawner _spawner;
         [SerializeField] private PlayerCatcher _playerCatcher;
+        [SerializeField] private AudioSource _bgSound;
+        [SerializeField] private AudioSource _scoreSound;
+        [SerializeField] private AudioSource _endGameSound;
         
         private int _fish;
         private float _timer;
@@ -82,6 +85,7 @@ namespace SolidJump
         
         public void OpenStartScreen()
         {
+            _bgSound.Play();
             ResetAllValues();
             _ingameElements.DisableScreen();
             _player.DisableInput();
@@ -197,6 +201,7 @@ namespace SolidJump
         private void ProcessFishCatched()
         {
             _fish += 5;
+            _scoreSound.Play();
             _fishText.text = _fish.ToString();
         }
         
@@ -204,12 +209,13 @@ namespace SolidJump
         {
             UpdateBestTimeValue();
             
-            var statsData = new StatisticsData(StatisticsDataHolder.StatisticsDatas[1].GamesPlayed++, 0, 0,
+            var statsData = new StatisticsData(StatisticsDataHolder.StatisticsDatas[1].GamesPlayed + 1, StatisticsDataHolder.StatisticsDatas[1].SuccessfulGames + 1, 0,
                 StatisticsDataHolder.StatisticsDatas[1].CollectedBonuses + _fish,
                 StatisticsDataHolder.StatisticsDatas[1].BestTime);
 
             StatisticsDataHolder.UpdateGameStatistics(_gameType, statsData);
-            _endScreen.Enable(_fish, _timerText.text, StatisticsDataHolder.StatisticsDatas[0].BestTime);
+            _endScreen.Enable(_fish, _timerText.text, StatisticsDataHolder.StatisticsDatas[1].BestTime);
+            _endGameSound.Play();
 
             if (_fish > 0)
             {

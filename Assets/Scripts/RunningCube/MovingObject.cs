@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace RunningCube
 {
-    [RequireComponent(typeof(BoxCollider2D))]
+    [RequireComponent(typeof(Collider2D))]
     public class MovingObject : MonoBehaviour,IIntractable
     {
         [SerializeField] private float _speed = 0;

@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using TMPro.EditorUtilities;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -33,7 +32,7 @@ public class EndScreen : MonoBehaviour
         _screenVisabilityHandler.EnableScreen();
 
         if (_coinsText != null)
-            _coinsText.text = "<sprite name=\"Fra1me 8 2\">  " + coins.ToString();
+            _coinsText.text = coins.ToString();
         
         _currentTimeText.text = time;
 

@@ -25,6 +25,10 @@ namespace RunningCube
         [SerializeField] private StartScreen _startScreen;
         [SerializeField] private ScreenVisabilityHandler _ingameElements;
         [SerializeField] private InteractableObjectSpawner _spawner;
+        [SerializeField] private AudioSource _scoreSound;
+        [SerializeField] private AudioSource _endGameSound;
+        [SerializeField] private AudioSource _bgSound;
+        [SerializeField] private AudioSource _hitSound;
 
         private int _coins;
         private float _timer;
@@ -84,6 +88,7 @@ namespace RunningCube
 
         public void OpenStartScreen()
         {
+            _bgSound.Play();
             ResetAllValues();
             _ingameElements.DisableScreen();
             _menu.Disable();
@@ -189,6 +194,7 @@ namespace RunningCube
         private void ProcessSpikesCollision()
         {
             _healthCount--;
+            _hitSound.Play();
 
             UpdateHearts();
 
@@ -213,17 +219,21 @@ namespace RunningCube
         private void ProcessCoinCollision()
         {
             _coins += 5;
+            _scoreSound.Play();
             _coinsText.text = _coinsText.text = "<sprite name=\"Fra1me 8 2\">  " + _coins.ToString();
         }
 
         private void ProcessGameEnd()
         {
-            var statsData = new StatisticsData(StatisticsDataHolder.StatisticsDatas[0].GamesPlayed++, 0, 0,
+            _spawner.ReturnAllObjectsToPool();
+            
+            var statsData = new StatisticsData(StatisticsDataHolder.StatisticsDatas[0].GamesPlayed + 1, 0, 0,
                 StatisticsDataHolder.StatisticsDatas[0].CollectedBonuses + _coins,
                 StatisticsDataHolder.StatisticsDatas[0].BestTime);
 
             StatisticsDataHolder.UpdateGameStatistics(_gameType, statsData);
             _endScreen.Enable(_coins, _timerText.text, StatisticsDataHolder.StatisticsDatas[0].BestTime);
+            _endGameSound.Play();
 
             if (_coins > 0)
             {
