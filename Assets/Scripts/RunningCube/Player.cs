@@ -23,6 +23,7 @@ namespace RunningCube
         public void EnableInput()
         {
             _touchCoroutine = StartCoroutine(HandleInput());
+            _canJump = true;
         }
 
         public void DisableInput()

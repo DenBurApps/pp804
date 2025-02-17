@@ -19,7 +19,7 @@ namespace BarelDestroyer
         public void Enable()
         {
             gameObject.SetActive(true);
-            _bestBarelsText.text = StatisticsDataHolder.StatisticsDatas[3].CollectedBonuses.ToString();
+            _bestBarelsText.text = StatisticsDataHolder.StatisticsDatas[3].BestTime.ToString();
         }
 
         public void Disable()

@@ -8,7 +8,7 @@ namespace QuickHands
 {
     public class GameController : MonoBehaviour
     {
-        private const float SpawnInterval = 1.5f;
+        private const float SpawnInterval = 0.5f;
         private const float InitTimerValue = 60;
         
         [SerializeField] private TMP_Text _timerText;
@@ -215,7 +215,7 @@ namespace QuickHands
                 StopCoroutine(_timerCoroutine);
 
             _player.StopDetectingTouch();
-            _endScreen.Enable(_score, _timerText.text, StatisticsDataHolder.StatisticsDatas[4].CollectedBonuses);
+            _endScreen.Enable(_score, _timerText.text, StatisticsDataHolder.StatisticsDatas[4].BestTime);
             _endGameSound.Play();
             _objectSpawner.ReturnAllObjectsToPool();
         }
@@ -242,8 +242,13 @@ namespace QuickHands
         
         private void UpdateBestValue()
         {
-            int bestBonuses = StatisticsDataHolder.StatisticsDatas[3].CollectedBonuses;
-            StatisticsDataHolder.StatisticsDatas[3].CollectedBonuses = Mathf.Max(bestBonuses, _score);
+            var currentStats = StatisticsDataHolder.StatisticsDatas[4];
+            if (currentStats == null) return;
+
+            if (_score > currentStats.BestTime)
+            {
+                currentStats.BestTime = _score;
+            }
         }
     }
 }

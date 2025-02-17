@@ -8,7 +8,7 @@ namespace SolidJump
     public class GameController : MonoBehaviour
     {
         private const float SpawnInterval = 1f;
-        
+
         [SerializeField] private RotationScreen _rotateScreen;
         [SerializeField] private PlayerMover _player;
         [SerializeField] private MovingObject _startPlatform;
@@ -25,15 +25,15 @@ namespace SolidJump
         [SerializeField] private AudioSource _bgSound;
         [SerializeField] private AudioSource _scoreSound;
         [SerializeField] private AudioSource _endGameSound;
-        
+
         private int _fish;
         private float _timer;
-        
+
         private IEnumerator _spawnCoroutine;
         private IEnumerator _timerCoroutine;
 
         private GameState _currentGameState;
-        
+
         private enum GameState
         {
             Starting,
@@ -41,48 +41,69 @@ namespace SolidJump
             Paused,
             End,
         }
-        
+
+        private void Awake()
+        {
+            AssertSerializedFields();
+        }
+
         private void OnEnable()
         {
-            _rotateScreen.ScreenClosed += OpenStartScreen;
-
-            _spawner.FishCatched += ProcessFishCatched;
-
-            _playerCatcher.PlayerCathced += ProcessGameEnd;
-
-            _startScreen.PlayClicked += StartGame;
-
-            _menu.RestartClicked += RestartGame;
-            _menu.MenuClicked += OpenStartScreen;
-            _menu.ContinueClicked += ContinueGame;
-
-            _endScreen.RestartClicked += RestartGame;
-            _endScreen.MainMenuClicked += OpenStartScreen;
+            SubscribeToEvents();
         }
 
         private void OnDisable()
         {
+            UnsubscribeFromEvents();
+        }
+
+        private void AssertSerializedFields()
+        {
+            Debug.Assert(_rotateScreen != null, "RotateScreen is not assigned!");
+            Debug.Assert(_player != null, "PlayerMover is not assigned!");
+            Debug.Assert(_startPlatform != null, "StartPlatform is not assigned!");
+            Debug.Assert(_endScreen != null, "EndScreen is not assigned!");
+            Debug.Assert(_menu != null, "Menu is not assigned!");
+            Debug.Assert(_playerBalance != null, "PlayerBalance is not assigned!");
+            Debug.Assert(_timerText != null, "TimerText is not assigned!");
+            Debug.Assert(_fishText != null, "FishText is not assigned!");
+            Debug.Assert(_startScreen != null, "StartScreen is not assigned!");
+            Debug.Assert(_ingameElements != null, "IngameElements is not assigned!");
+            Debug.Assert(_spawner != null, "Spawner is not assigned!");
+            Debug.Assert(_playerCatcher != null, "PlayerCatcher is not assigned!");
+        }
+
+        private void SubscribeToEvents()
+        {
+            _rotateScreen.ScreenClosed += OpenStartScreen;
+            _spawner.FishCatched += ProcessFishCatched;
+            _playerCatcher.PlayerCathced += ProcessGameEnd;
+            _startScreen.PlayClicked += StartGame;
+            _menu.RestartClicked += RestartGame;
+            _menu.MenuClicked += OpenStartScreen;
+            _menu.ContinueClicked += ContinueGame;
+            _endScreen.RestartClicked += RestartGame;
+            _endScreen.MainMenuClicked += OpenStartScreen;
+        }
+
+        private void UnsubscribeFromEvents()
+        {
             _rotateScreen.ScreenClosed -= OpenStartScreen;
-
             _spawner.FishCatched -= ProcessFishCatched;
-
             _playerCatcher.PlayerCathced -= ProcessGameEnd;
-
             _startScreen.PlayClicked -= StartGame;
-            
             _menu.RestartClicked -= RestartGame;
             _menu.MenuClicked -= OpenStartScreen;
             _menu.ContinueClicked -= ContinueGame;
-
             _endScreen.RestartClicked -= RestartGame;
             _endScreen.MainMenuClicked -= OpenStartScreen;
         }
-        
+
         public void OnPauseGame()
         {
-           SetGameState(GameState.Paused);
+            SetGameState(GameState.Paused);
         }
-        
+
         public void OpenStartScreen()
         {
             _bgSound.Play();
@@ -96,15 +117,18 @@ namespace SolidJump
 
         private void StartGame()
         {
-            _ingameElements.EnableScreen();
             _startScreen.Disable();
             _startPlatform.EnableMovement();
-
             SetGameState(GameState.Playing);
         }
-        
+
         private void ContinueGame()
         {
+            _player.gameObject.SetActive(true);
+            _player.ReturnToDefaultPosition();
+            _player.EnableInput();
+            _startPlatform.gameObject.SetActive(true);
+            _startPlatform.ReturnToDefaultPosition();
             SetGameState(GameState.Playing);
         }
 
@@ -113,7 +137,7 @@ namespace SolidJump
             ResetAllValues();
             SetGameState(GameState.Playing);
         }
-        
+
         private void SetGameState(GameState newState)
         {
             _currentGameState = newState;
@@ -129,18 +153,8 @@ namespace SolidJump
                     _ingameElements.EnableScreen();
                     _startPlatform.EnableMovement();
 
-                    if (_spawnCoroutine == null)
-                    {
-                        _spawnCoroutine = StartSpawning();
-                        StartCoroutine(_spawnCoroutine);
-                    }
-
-                    if (_timerCoroutine == null)
-                    {
-                        _timerCoroutine = TimerCountdown();
-                        StartCoroutine(_timerCoroutine);
-                    }
-
+                    StartCoroutineIfNotRunning(ref _spawnCoroutine, StartSpawning());
+                    StartCoroutineIfNotRunning(ref _timerCoroutine, TimerCountdown());
                     break;
 
                 case GameState.End:
@@ -148,27 +162,40 @@ namespace SolidJump
                     break;
 
                 case GameState.Paused:
-                    _spawner.ReturnAllObjectsToPool();
-                    _player.DisableInput();
-                    _ingameElements.DisableScreen();
-                    SetGameState(GameState.Paused);
-                    _startPlatform.gameObject.SetActive(true);
-                    _startPlatform.ReturnToDefaultPosition();
-                    _startPlatform.DisableMovement();
-
-                    if (_spawnCoroutine != null)
-                        StopCoroutine(_spawnCoroutine);
-
-                    _spawnCoroutine = null;
-
-                    if (_timerCoroutine != null)
-                        StopCoroutine(_timerCoroutine);
-
-                    _timerCoroutine = null;
+                    PauseGameLogic();
                     break;
             }
         }
-        
+
+        private void StartCoroutineIfNotRunning(ref IEnumerator coroutine, IEnumerator routine)
+        {
+            if (coroutine == null)
+            {
+                coroutine = routine;
+                StartCoroutine(coroutine);
+            }
+        }
+
+        private void StopCoroutineIfRunning(ref IEnumerator coroutine)
+        {
+            if (coroutine != null)
+            {
+                StopCoroutine(coroutine);
+                coroutine = null;
+            }
+        }
+
+        private void PauseGameLogic()
+        {
+            _spawner.ReturnAllObjectsToPool();
+            _player.DisableInput();
+            _player.gameObject.SetActive(false);
+            _ingameElements.DisableScreen();
+            _startPlatform.DisableMovement();
+            StopCoroutineIfRunning(ref _spawnCoroutine);
+            StopCoroutineIfRunning(ref _timerCoroutine);
+        }
+
         private IEnumerator StartSpawning()
         {
             WaitForSeconds interval = new WaitForSeconds(SpawnInterval);
@@ -183,18 +210,17 @@ namespace SolidJump
         private IEnumerator TimerCountdown()
         {
             _timer = 0;
-            _timerText.text = "00:00";
+            UpdateUI("00:00", _fish);
+
+            WaitForSeconds updateInterval = new WaitForSeconds(0.1f);
 
             while (true)
             {
-                _timer += Time.deltaTime;
-
+                _timer += 0.1f;
                 int minutes = Mathf.FloorToInt(_timer / 60);
                 int seconds = Mathf.FloorToInt(_timer % 60);
-
-                _timerText.text = $"{minutes:00}:{seconds:00}";
-
-                yield return null;
+                UpdateUI($"{minutes:00}:{seconds:00}", _fish);
+                yield return updateInterval;
             }
         }
 
@@ -202,16 +228,20 @@ namespace SolidJump
         {
             _fish += 5;
             _scoreSound.Play();
-            _fishText.text = _fish.ToString();
+            UpdateUI(_timerText.text, _fish);
         }
-        
+
         private void ProcessGameEnd()
         {
             UpdateBestTimeValue();
-            
-            var statsData = new StatisticsData(StatisticsDataHolder.StatisticsDatas[1].GamesPlayed + 1, StatisticsDataHolder.StatisticsDatas[1].SuccessfulGames + 1, 0,
+
+            var statsData = new StatisticsData(
+                StatisticsDataHolder.StatisticsDatas[1].GamesPlayed + 1,
+                StatisticsDataHolder.StatisticsDatas[1].SuccessfulGames + 1,
+                0,
                 StatisticsDataHolder.StatisticsDatas[1].CollectedBonuses + _fish,
-                StatisticsDataHolder.StatisticsDatas[1].BestTime);
+                StatisticsDataHolder.StatisticsDatas[1].BestTime
+            );
 
             StatisticsDataHolder.UpdateGameStatistics(_gameType, statsData);
             _endScreen.Enable(_fish, _timerText.text, StatisticsDataHolder.StatisticsDatas[1].BestTime);
@@ -221,57 +251,45 @@ namespace SolidJump
             {
                 _playerBalance.IncreaseBalance(_fish);
             }
-            
-            if (_spawnCoroutine != null)
-                StopCoroutine(_spawnCoroutine);
 
-            if (_timerCoroutine != null)
-                StopCoroutine(_timerCoroutine);
-
-            _spawnCoroutine = null;
-            _timerCoroutine = null;
+            StopCoroutineIfRunning(ref _spawnCoroutine);
+            StopCoroutineIfRunning(ref _timerCoroutine);
             _player.DisableInput();
         }
-        
+
         private void ResetAllValues()
         {
             _fish = 0;
             _timer = 0;
 
-            if (_spawnCoroutine != null)
-                StopCoroutine(_spawnCoroutine);
+            StopCoroutineIfRunning(ref _spawnCoroutine);
+            StopCoroutineIfRunning(ref _timerCoroutine);
 
-            if (_timerCoroutine != null)
-                StopCoroutine(_timerCoroutine);
+            UpdateUI("00:00", _fish);
 
-            _spawnCoroutine = null;
-            _timerCoroutine = null;
-            
-            _fishText.text = _fish.ToString();
-            
-            _timerText.text = Mathf.CeilToInt(_timer).ToString();
             _spawner.ReturnAllObjectsToPool();
+            _player.gameObject.SetActive(true);
             _player.DisableInput();
             _player.ReturnToDefaultPosition();
             _startPlatform.gameObject.SetActive(true);
             _startPlatform.ReturnToDefaultPosition();
         }
-        
+
         private void UpdateBestTimeValue()
         {
-            if (StatisticsDataHolder.StatisticsDatas[1].BestTime > 0)
-            {
-                var bestTime = StatisticsDataHolder.StatisticsDatas[1].BestTime;
+            var currentStats = StatisticsDataHolder.StatisticsDatas[1];
+            if (currentStats == null) return;
 
-                if (_timer > bestTime)
-                {
-                    StatisticsDataHolder.StatisticsDatas[1].BestTime = _timer;
-                }
-            }
-            else
+            if (_timer > currentStats.BestTime)
             {
-                StatisticsDataHolder.StatisticsDatas[1].BestTime = _timer;
+                currentStats.BestTime = _timer;
             }
+        }
+
+        private void UpdateUI(string timer, int fish)
+        {
+            _timerText.text = timer;
+            _fishText.text = fish.ToString();
         }
     }
 }

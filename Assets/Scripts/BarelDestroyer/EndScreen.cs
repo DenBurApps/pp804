@@ -9,7 +9,7 @@ namespace BarelDestroyer
     public class EndScreen : MonoBehaviour
     {
         [SerializeField] private TMP_Text _barrelsText;
-        [SerializeField] private TMP_Text _currentTimeText;
+        //[SerializeField] private TMP_Text _currentTimeText;
         [SerializeField] private TMP_Text _bestText;
 
         private ScreenVisabilityHandler _screenVisabilityHandler;
@@ -32,7 +32,7 @@ namespace BarelDestroyer
             _screenVisabilityHandler.EnableScreen();
             _barrelsText.text = barrels.ToString();
 
-            _currentTimeText.text = time;
+           // _currentTimeText.text = time;
 
             _bestText.text = bestBarrels.ToString();
         }

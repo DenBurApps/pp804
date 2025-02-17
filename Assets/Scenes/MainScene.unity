@@ -535,7 +535,7 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 2075290474}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.069692485, y: 0.11809969}
+  m_AnchorMin: {x: 0.06969246, y: 0.11809939}
   m_AnchorMax: {x: 0.61457, y: 0.86394244}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
@@ -560,7 +560,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Best time:'
+  m_text: 'Best barrels:'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 087277f72f01c2a4e82cd26a788910c9, type: 2}
   m_sharedMaterial: {fileID: -2007466993711707258, guid: 087277f72f01c2a4e82cd26a788910c9, type: 2}
@@ -1376,8 +1376,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1197154526}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.069692485, y: 0.11809969}
-  m_AnchorMax: {x: 0.61457, y: 0.86394244}
+  m_AnchorMin: {x: 0.06969246, y: 0.11809772}
+  m_AnchorMax: {x: 0.61457, y: 0.86394054}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -1401,7 +1401,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Best time:'
+  m_text: 'Best collected:'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 087277f72f01c2a4e82cd26a788910c9, type: 2}
   m_sharedMaterial: {fileID: -2007466993711707258, guid: 087277f72f01c2a4e82cd26a788910c9, type: 2}
@@ -2391,7 +2391,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: Jump from platform to platform, avoiding obstacles that appear along the
-    way.
+    way
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 087277f72f01c2a4e82cd26a788910c9, type: 2}
   m_sharedMaterial: {fileID: -2007466993711707258, guid: 087277f72f01c2a4e82cd26a788910c9, type: 2}
@@ -4421,9 +4421,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _gamesPlayed: {fileID: 105868755}
   _collectedBonuses: {fileID: 1076391068}
-  _bestTime: {fileID: 2127432168}
+  _bestTime: {fileID: 0}
   _successfulGames: {fileID: 0}
   _failedGames: {fileID: 0}
+  _bestValue: {fileID: 2127432168}
 --- !u!1 &561359272
 GameObject:
   m_ObjectHideFlags: 0
@@ -6555,6 +6556,7 @@ MonoBehaviour:
   _bestTime: {fileID: 1666619988}
   _successfulGames: {fileID: 0}
   _failedGames: {fileID: 0}
+  _bestValue: {fileID: 0}
 --- !u!1 &796277382
 GameObject:
   m_ObjectHideFlags: 0
@@ -10248,7 +10250,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.00036621094}
+  m_AnchoredPosition: {x: 0, y: -0.00048828125}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1067272726
@@ -11789,8 +11791,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1197154526}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.6496184, y: 0.11809957}
-  m_AnchorMax: {x: 0.91580945, y: 0.86394244}
+  m_AnchorMin: {x: 0.64961827, y: 0.11809772}
+  m_AnchorMax: {x: 0.91580945, y: 0.86394054}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -12248,7 +12250,7 @@ RectTransform:
   - {fileID: 1167152373}
   m_Father: {fileID: 1420566920}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.05818387, y: 0.06088692}
+  m_AnchorMin: {x: 0.05818387, y: 0.060887158}
   m_AnchorMax: {x: 0.94433427, y: 0.23158163}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
@@ -13908,9 +13910,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _gamesPlayed: {fileID: 1186578269}
   _collectedBonuses: {fileID: 0}
-  _bestTime: {fileID: 1167152374}
+  _bestTime: {fileID: 0}
   _successfulGames: {fileID: 1762177204}
   _failedGames: {fileID: 1712663405}
+  _bestValue: {fileID: 1167152374}
 --- !u!1 &1425346181
 GameObject:
   m_ObjectHideFlags: 0
@@ -15743,7 +15746,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Collect all the edible items in your box.
+  m_text: Collect all the edible items in your box
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 087277f72f01c2a4e82cd26a788910c9, type: 2}
   m_sharedMaterial: {fileID: -2007466993711707258, guid: 087277f72f01c2a4e82cd26a788910c9, type: 2}
@@ -17897,7 +17900,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: Control the cube, which is carried along the platforms, jumping over obstacles
-    and collecting bonuses.
+    and collecting bonuses
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 087277f72f01c2a4e82cd26a788910c9, type: 2}
   m_sharedMaterial: {fileID: -2007466993711707258, guid: 087277f72f01c2a4e82cd26a788910c9, type: 2}
@@ -19431,6 +19434,7 @@ MonoBehaviour:
   _bestTime: {fileID: 409343246}
   _successfulGames: {fileID: 939206049}
   _failedGames: {fileID: 1819285262}
+  _bestValue: {fileID: 0}
 --- !u!1 &1876756563
 GameObject:
   m_ObjectHideFlags: 0
@@ -20499,7 +20503,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.00036621094}
+  m_AnchoredPosition: {x: 0, y: -0.00048828125}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &2026936388
@@ -21448,6 +21452,7 @@ MonoBehaviour:
   _bestTime: {fileID: 941541739}
   _successfulGames: {fileID: 0}
   _failedGames: {fileID: 0}
+  _bestValue: {fileID: 0}
 --- !u!1 &2075290473
 GameObject:
   m_ObjectHideFlags: 0
@@ -21482,7 +21487,7 @@ RectTransform:
   - {fileID: 2127432167}
   m_Father: {fileID: 519563247}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.05818387, y: 0.078738034}
+  m_AnchorMin: {x: 0.05818387, y: 0.07873833}
   m_AnchorMax: {x: 0.94433427, y: 0.30070245}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
@@ -21594,7 +21599,7 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 2075290474}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.6496184, y: 0.11809957}
+  m_AnchorMin: {x: 0.64961827, y: 0.11809939}
   m_AnchorMax: {x: 0.91580945, y: 0.86394244}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}

@@ -19,7 +19,7 @@ namespace QuickHands
         public void Enable()
         {
             gameObject.SetActive(true);
-            _bestBarelsText.text = StatisticsDataHolder.StatisticsDatas[4].CollectedBonuses.ToString();
+            _bestBarelsText.text = StatisticsDataHolder.StatisticsDatas[4].BestTime.ToString();
         }
 
         public void Disable()

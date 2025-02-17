@@ -1428,6 +1428,22 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
       objectReference: {fileID: 89225473}
+    - target: {fileID: 6099997336435318763, guid: 9bbac97ee9fd3c548a4881381a53520c, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.5897675
+      objectReference: {fileID: 0}
+    - target: {fileID: 6099997336435318763, guid: 9bbac97ee9fd3c548a4881381a53520c, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.08061522
+      objectReference: {fileID: 0}
+    - target: {fileID: 6099997336435318763, guid: 9bbac97ee9fd3c548a4881381a53520c, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: -0.00920105
+      objectReference: {fileID: 0}
+    - target: {fileID: 6099997336435318763, guid: 9bbac97ee9fd3c548a4881381a53520c, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7312797562467174663, guid: 9bbac97ee9fd3c548a4881381a53520c, type: 3}
       propertyPath: m_Camera
       value: 

@@ -100,33 +100,30 @@ namespace MemoryChallenge
 
         private void ProcessCellClicked(Cell cell)
         {
-            if (cell.IsFliped)
-                return;
+            if (cell.IsFliped) return;
 
             if (_firstCell != null && _secondCell != null)
-            {
-                _firstCell.HideCellImage();
-                _secondCell.HideCellImage();
-
-                _firstCell = null;
-                _secondCell = null;
-            }
+                ResetSelectedCells();
 
             if (_firstCell == null)
             {
                 _firstCell = cell;
                 _firstCell.ShowCellImage();
-                return;
             }
-
-            if (_secondCell == null && _firstCell != cell)
+            else if (_firstCell != cell)
             {
                 _secondCell = cell;
                 _secondCell.ShowCellImage();
-            }
-
-            if (_firstCell != null && _secondCell != null)
                 CompareChosenCells();
+            }
+        }
+        
+        private void ResetSelectedCells()
+        {
+            _firstCell?.HideCellImage();
+            _secondCell?.HideCellImage();
+            _firstCell = null;
+            _secondCell = null;
         }
 
         private void CompareChosenCells()
@@ -171,16 +168,14 @@ namespace MemoryChallenge
         private IEnumerator StartTimer()
         {
             _currentTime = 0;
+            _view.SetTimeValue("00:00");
 
-            while (_currentTime > 0f)
+            while (true)
             {
                 _currentTime += Time.deltaTime;
                 UpdateTimer(_currentTime);
                 yield return null;
             }
-
-            _currentTime = 0;
-            _view.SetTimeValue("00:00");
         }
 
         private void UpdateTimer(float time)
@@ -234,7 +229,7 @@ namespace MemoryChallenge
             {
                 var bestTime = StatisticsDataHolder.StatisticsDatas[2].BestTime;
 
-                if (_currentTime > bestTime)
+                if (_currentTime < bestTime)
                 {
                     StatisticsDataHolder.StatisticsDatas[2].BestTime = _currentTime;
                 }

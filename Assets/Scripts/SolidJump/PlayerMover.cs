@@ -41,7 +41,9 @@ namespace SolidJump
         
         public void EnableInput()
         {
-            _touchCoroutine = StartCoroutine(HandleInput());
+            _touchCoroutine ??= StartCoroutine(HandleInput());
+
+            _canJump = true;
         }
 
         public void DisableInput()
